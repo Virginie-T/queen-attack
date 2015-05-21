@@ -1,0 +1,84 @@
+<?php
+
+function queen_menu() {
+    $items = array();
+    $items['attack'] = array(
+        'title' => 'Queen Attack',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('queen_move_form'),
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+    );
+
+    $items['success'] = array(
+        'title' => 'Success',
+        'page callback' => 'queen_move_success',
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+
+    return $items;
+}
+
+
+function queen_move_form() {
+    $form['queen_x'] = array(
+        '#title' => 'Queen X Coordinate',
+        '#type' => 'textfield',
+        '#description' => t('Please enter Queen\'s X coordinate'),
+        '#element_validate' => array('element_validate_number'),
+        '#required' => TRUE,
+    );
+    $form['queen_y'] = array(
+        '#title' => 'Queen Y Coordinate',
+        '#type' => 'textfield',
+        '#description' => t('Please enter Queen\'s Y coordinate'),
+        '#element_validate' => array('element_validate_number'),
+        '#required' => TRUE,
+    );
+    $form['target_x'] = array(
+        '#title' => 'Target X Coordinate',
+        '#type' => 'textfield',
+        '#description' => t('Please enter Target\'s X coordinate'),
+        '#element_validate' => array('element_validate_number'),
+        '#required' => TRUE,
+    );
+    $form['target_y'] = array(
+        '#title' => 'Target Y Coordinate',
+        '#type' => 'textfield',
+        '#description' => t('Please enter Target\'s Y coordinate'),
+        '#element_validate' => array('element_validate_number'),
+        '#required' => TRUE,
+    );
+}
+
+function queen_move_form_submit($form, &$form_state) {
+    $queen_posX = $form_state['values']['queen_x'];
+    $queen_posY = $form_state['values']['queen_y'];
+
+    $target_posX = $form_state['values']['target_x'];
+    $target_posY = $form_state['values']['target_y'];
+
+    $queen = [$queen_posX, $queen_posY];
+    $target = [$target_posX, $target_posY];
+
+    if (($queen[0] === $target[0]) || ($queen[1] === $target[1]) ||
+       (abs($queen[0] - $target[0])) === (abs($queen[1] - $target[1]))) {
+        $_SESSION['move_output'] = true;
+    } else {
+        $_SESSION['move_output'] = false;
+    }
+
+    $form_state['redirect'] = 'success';
+
+}
+
+function queen_move_success() {
+
+    if ($_SESSION['move_output'] = true) {
+        return "The Queen can attack this target.";
+    } else {
+        "The Queen cannot attack the target from the current position.";
+    }
+
+}
